@@ -3,8 +3,13 @@ package com.jack.mainactivity;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.Drawable;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -20,17 +25,21 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.jack.mainactivity.databinding.ActivityMainBinding;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -43,7 +52,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "AndroidCameraApi";
-    private Button takePictureButton;
+    //private Button takePictureButton;
     private TextureView textureView;
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -67,21 +76,59 @@ public class MainActivity extends AppCompatActivity {
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
 
+    private ActivityMainBinding activityMainBinding;
+    private CompositionAdapter compositionAdapter;
+
+    private CompositionData.Type currentType = CompositionData.Type.LIGHT;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        textureView = (TextureView) findViewById(R.id.texture);
-        assert textureView != null;
+        activityMainBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.activity_main, null, false);
+        setContentView(activityMainBinding.getRoot());
+
+        compositionAdapter = new CompositionAdapter(this);
+
+        textureView = activityMainBinding.texture;
         textureView.setSurfaceTextureListener(textureListener);
-        takePictureButton = (Button) findViewById(R.id.btn_takepicture);
+
+        textureView.post(() -> {
+
+            CompositionData.SCREEN_WIDTH = textureView.getWidth();
+            CompositionData.SCREEN_HEIGHT = textureView.getHeight();
+
+            loadCompositeData(compositionAdapter.getCurrentCompositionData(), currentType);
+
+            activityMainBinding.compositionOuterLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+                public void onSwipeTop() {
+                    negateType();
+                    loadCompositeData(compositionAdapter.getCurrentCompositionData(), currentType);
+                }
+
+                public void onSwipeRight() {
+                    loadCompositeData(compositionAdapter.getPreviousCompositionData(), currentType);
+                }
+
+                public void onSwipeLeft() {
+                    loadCompositeData(compositionAdapter.getNextCompositionData(), currentType);
+                }
+
+                public void onSwipeBottom() {
+                    negateType();
+                    loadCompositeData(compositionAdapter.getCurrentCompositionData(), currentType);
+                }
+            });
+
+        });
+
+        /*takePictureButton = (Button) findViewById(R.id.btn_takepicture);
         assert takePictureButton != null;
         takePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 takePicture();
             }
-        });
+        });*/
     }
 
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
@@ -344,5 +391,27 @@ public class MainActivity extends AppCompatActivity {
         //closeCamera();
         stopBackgroundThread();
         super.onPause();
+    }
+
+    private void loadCompositeData(CompositionData compositionData, CompositionData.Type type) {
+
+        int resId = type == CompositionData.Type.LIGHT ? compositionData.getCompositionDrawableResIdLight() : compositionData.getCompositionDrawableResIdDark();
+        int frameResId = type == CompositionData.Type.LIGHT ? R.drawable.ic_white_border : R.drawable.ic_black_border;
+        activityMainBinding.frame.setBackgroundResource(frameResId);
+
+        Glide.with(this).load(resId).into(new SimpleTarget<Drawable>() {
+            @Override
+            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                activityMainBinding.compositionOuterLayout.setBackground(resource);
+            }
+        });
+    }
+
+    private void negateType() {
+        if (currentType.equals(CompositionData.Type.LIGHT)) {
+            currentType = CompositionData.Type.DARK;
+        } else if (currentType.equals(CompositionData.Type.DARK)) {
+            currentType = CompositionData.Type.LIGHT;
+        }
     }
 }
