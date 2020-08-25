@@ -23,7 +23,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(splashLayoutBinding.getRoot());
 
         delayHandler.postDelayed(() -> {
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            startActivity(new Intent(SplashActivity.this, LandingPageActivity.class));
             finish();
         }, 3000);
     }

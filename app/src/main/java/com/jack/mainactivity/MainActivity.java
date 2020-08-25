@@ -140,7 +140,15 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        new Demo().show(activityMainBinding, this);
+        Bundle bundle = getIntent().getExtras();
+        assert bundle != null;
+        boolean isDemoMode = bundle.getBoolean("demo");
+
+        if (isDemoMode) {
+            new Demo().show(activityMainBinding, this);
+        } else {
+            activityMainBinding.demo.setVisibility(View.INVISIBLE);
+        }
 
         compositionDataViewModel.getCompositionDataMutableLiveData().observe(this, compositionData -> {
             loadCompositeData(compositionData, compositionDataViewModel.curentType);

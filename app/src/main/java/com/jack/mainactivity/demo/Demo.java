@@ -45,7 +45,7 @@ public class Demo {
                                                                 .setShowcaseEventListener(new OnShowcaseEventListener() {
                                                                     @Override
                                                                     public void onShowcaseViewHide(ShowcaseView showcaseView) {
-                                                                        activityMainBinding.demo.setVisibility(View.INVISIBLE);
+                                                                        activity.finish();
                                                                     }
 
                                                                     @Override
