@@ -1,9 +1,12 @@
 package com.jack.mainactivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.ProgressBar;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -21,6 +24,16 @@ public class SplashActivity extends AppCompatActivity {
         splashLayoutBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.splash_layout, null, false);
 
         setContentView(splashLayoutBinding.getRoot());
+
+        ProgressBar progressbar = splashLayoutBinding.progressBar;
+        progressbar.getIndeterminateDrawable().setColorFilter(Color.parseColor("#FFFFFF"), android.graphics.PorterDuff.Mode.SRC_IN);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        });
 
         delayHandler.postDelayed(() -> {
             startActivity(new Intent(SplashActivity.this, LandingPageActivity.class));
