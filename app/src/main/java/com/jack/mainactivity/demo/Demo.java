@@ -2,12 +2,10 @@ package com.jack.mainactivity.demo;
 
 import android.app.Activity;
 import android.view.MotionEvent;
-import android.view.View;
 
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
-import com.jack.mainactivity.MainActivity;
 import com.jack.mainactivity.R;
 import com.jack.mainactivity.databinding.ActivityMainBinding;
 

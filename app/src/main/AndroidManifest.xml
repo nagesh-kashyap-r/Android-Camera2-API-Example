@@ -21,7 +21,7 @@
         </activity>
 
         <activity android:name=".MainActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".LandingPageActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".LandingActivity" android:screenOrientation="portrait"/>
 
     </application>
 

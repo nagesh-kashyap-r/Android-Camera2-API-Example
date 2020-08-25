@@ -152,6 +152,39 @@ public class CompositionData {
         return compositionDataList;
     }
 
+    public static List<CompositionData> getCompositionDataListForSplashScreen() {
+        List<CompositionData> compositionDataList = new ArrayList<>();
+
+        //Golden Triangle
+        CompositionData compositionData = CompositionData.CompositionDataBuilder
+                .aCompositionData()
+                .setComposition(Composition.GOLDEN_TRIANGLE)
+                .setRotationAngle(0)
+                .build();
+
+        compositionDataList.add(compositionData);
+
+        //3x3 portrait rule of thirds
+        compositionData = CompositionData.CompositionDataBuilder
+                .aCompositionData()
+                .setComposition(Composition.RULE_OF_THIRDS_3x3)
+                .setRotationAngle(0)
+                .build();
+
+        compositionDataList.add(compositionData);
+
+        //Fibinocci
+        compositionData = CompositionData.CompositionDataBuilder
+                .aCompositionData()
+                .setComposition(Composition.FIBINOCCI)
+                .setRotationAngle(0)
+                .build();
+
+        compositionDataList.add(compositionData);
+
+        return compositionDataList;
+    }
+
     public enum Type {
         DARK,
         LIGHT
