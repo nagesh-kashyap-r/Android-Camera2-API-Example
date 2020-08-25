@@ -1,34 +1,8 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="300dp"
-    android:height="450dp"
-    android:viewportWidth="300"
-    android:viewportHeight="450">
-  <path
-      android:pathData="M151.978,449.272C151.239,1.239 151.239,1.239 151.239,1.239"
-      android:strokeLineJoin="miter"
-      android:strokeWidth="2.47879243"
-      android:fillColor="#00000000"
-      android:strokeColor="@color/black"
-      android:fillType="evenOdd"
-      android:fillAlpha="0.75"
-      android:strokeLineCap="butt"/>
-  <path
-      android:pathData="M-0.27,150.998C300.638,151.74 300.638,151.74 300.638,151.74"
-      android:strokeLineJoin="miter"
-      android:strokeWidth="1.63411534"
-      android:fillColor="#00000000"
-      android:strokeColor="@color/black"
-      android:fillType="evenOdd"
-      android:fillAlpha="0.75"
-      android:strokeLineCap="butt"/>
-  <path
-      android:pathData="M0.763,300.519C300.108,301.261 300.108,301.261 300.108,301.261"
-      android:strokeLineJoin="miter"
-      android:strokeWidth="1.62986708"
-      android:fillColor="#00000000"
-      android:strokeColor="@color/black"
-      android:fillType="evenOdd"
-      android:fillAlpha="0.75"
-      android:strokeLineCap="butt"/>
-
-</vector>
+<?xml version="1.0" encoding="utf-8"?>
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromDegrees="0"
+    android:toDegrees="0"
+    android:pivotX="50%"
+    android:pivotY="50%"
+    android:drawable="@drawable/ic_photo_3_2_portrait_dark_common">
+</rotate>

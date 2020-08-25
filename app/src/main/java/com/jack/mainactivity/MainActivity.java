@@ -25,20 +25,29 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.jack.mainactivity.adapter.CompositionAdapter;
 import com.jack.mainactivity.databinding.ActivityMainBinding;
+import com.jack.mainactivity.listeners.OnSwipeTouchListener;
+import com.jack.mainactivity.model.CompositionData;
+import com.jack.mainactivity.viewModel.CompositionDataViewModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -79,47 +88,56 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding activityMainBinding;
     private CompositionAdapter compositionAdapter;
 
-    private CompositionData.Type currentType = CompositionData.Type.LIGHT;
+    private boolean longClicked;
+
+    private CompositionDataViewModel compositionDataViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        hideSystemUI(getWindow());
         super.onCreate(savedInstanceState);
         activityMainBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.activity_main, null, false);
         setContentView(activityMainBinding.getRoot());
 
-        compositionAdapter = new CompositionAdapter(this);
+        compositionDataViewModel = new ViewModelProvider(this).get(CompositionDataViewModel.class);
+
+
+        compositionAdapter = new CompositionAdapter(this, compositionDataViewModel.getCompositionDataMutableLiveData().getValue());
 
         textureView = activityMainBinding.texture;
-        textureView.setSurfaceTextureListener(textureListener);
 
         textureView.post(() -> {
 
             CompositionData.SCREEN_WIDTH = textureView.getWidth();
             CompositionData.SCREEN_HEIGHT = textureView.getHeight();
 
-            loadCompositeData(compositionAdapter.getCurrentCompositionData(), currentType);
+            loadCompositeData(compositionAdapter.getCurrentCompositionData(), compositionDataViewModel.curentType);
 
             activityMainBinding.compositionOuterLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
                 public void onSwipeTop() {
                     negateType();
-                    loadCompositeData(compositionAdapter.getCurrentCompositionData(), currentType);
                 }
 
                 public void onSwipeRight() {
-                    loadCompositeData(compositionAdapter.getPreviousCompositionData(), currentType);
+                    compositionDataViewModel.getCompositionDataMutableLiveData().postValue(compositionAdapter.getPreviousCompositionData());
                 }
 
                 public void onSwipeLeft() {
-                    loadCompositeData(compositionAdapter.getNextCompositionData(), currentType);
+                    compositionDataViewModel.getCompositionDataMutableLiveData().postValue(compositionAdapter.getNextCompositionData());
                 }
 
                 public void onSwipeBottom() {
                     negateType();
-                    loadCompositeData(compositionAdapter.getCurrentCompositionData(), currentType);
                 }
             });
-
         });
+
+        compositionDataViewModel.getCompositionDataMutableLiveData().observe(this, compositionData -> {
+            loadCompositeData(compositionData, compositionDataViewModel.curentType);
+        });
+
+        textureView = activityMainBinding.texture;
+        textureView.setSurfaceTextureListener(textureListener);
 
         /*takePictureButton = (Button) findViewById(R.id.btn_takepicture);
         assert takePictureButton != null;
@@ -408,10 +426,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void negateType() {
-        if (currentType.equals(CompositionData.Type.LIGHT)) {
-            currentType = CompositionData.Type.DARK;
-        } else if (currentType.equals(CompositionData.Type.DARK)) {
-            currentType = CompositionData.Type.LIGHT;
+        if (compositionDataViewModel.curentType.equals(CompositionData.Type.LIGHT)) {
+            compositionDataViewModel.curentType = CompositionData.Type.DARK;
+        } else if (compositionDataViewModel.curentType.equals(CompositionData.Type.DARK)) {
+            compositionDataViewModel.curentType = CompositionData.Type.LIGHT;
         }
+
+        compositionDataViewModel.getCompositionDataMutableLiveData().postValue(compositionDataViewModel.getCompositionDataMutableLiveData().getValue());
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (!hasFocus) {
+
+        }
+        hideSystemUI(getWindow());
+    }
+
+    public static void hideSystemUI(Window window) {
+        window.getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LOW_PROFILE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        );
     }
 }

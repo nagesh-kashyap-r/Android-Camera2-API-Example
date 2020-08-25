@@ -1,7 +1,9 @@
-package com.jack.mainactivity;
+package com.jack.mainactivity.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
+import com.jack.mainactivity.model.CompositionData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +14,11 @@ public class CompositionAdapter {
     private CompositionData currentCompositionData;
     private Context context;
 
-    public CompositionAdapter(Context context) {
+    public CompositionAdapter(Context context, CompositionData compositionData) {
         this.context = context;
         compositionDataList.addAll(CompositionData.getCompositionDataList());
 
-        currentCompositionData = compositionDataList.get(currentDrawableIndex);
+        currentCompositionData = compositionData;
     }
 
     public CompositionData getCurrentCompositionData() {

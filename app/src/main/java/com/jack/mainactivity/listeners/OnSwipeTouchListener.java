@@ -1,4 +1,4 @@
-package com.jack.mainactivity;
+package com.jack.mainactivity.listeners;
 
 import android.content.Context;
 import android.view.GestureDetector;
