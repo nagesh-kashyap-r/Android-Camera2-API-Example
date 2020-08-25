@@ -34,6 +34,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -43,8 +44,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionItemTarget;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.jack.mainactivity.adapter.CompositionAdapter;
 import com.jack.mainactivity.databinding.ActivityMainBinding;
+import com.jack.mainactivity.demo.Demo;
 import com.jack.mainactivity.listeners.OnSwipeTouchListener;
 import com.jack.mainactivity.model.CompositionData;
 import com.jack.mainactivity.viewModel.CompositionDataViewModel;
@@ -130,7 +137,10 @@ public class MainActivity extends AppCompatActivity {
                     negateType();
                 }
             });
+
         });
+
+        new Demo().show(activityMainBinding, this);
 
         compositionDataViewModel.getCompositionDataMutableLiveData().observe(this, compositionData -> {
             loadCompositeData(compositionData, compositionDataViewModel.curentType);
@@ -186,8 +196,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onError(CameraDevice camera, int error) {
-            cameraDevice.close();
-            cameraDevice = null;
+            if (cameraDevice != null) {
+                cameraDevice.close();
+                cameraDevice = null;
+            }
         }
     };
     final CameraCaptureSession.CaptureCallback captureCallbackListener = new CameraCaptureSession.CaptureCallback() {
@@ -406,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         Log.e(TAG, "onPause");
-        //closeCamera();
+        closeCamera();
         stopBackgroundThread();
         super.onPause();
     }
