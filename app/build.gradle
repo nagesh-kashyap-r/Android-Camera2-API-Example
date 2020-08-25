@@ -44,4 +44,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+
+    implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
 }
